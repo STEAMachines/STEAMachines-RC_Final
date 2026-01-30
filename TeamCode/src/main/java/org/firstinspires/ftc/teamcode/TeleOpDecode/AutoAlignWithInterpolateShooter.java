@@ -155,7 +155,7 @@ public class AutoAlignWithInterpolateShooter extends LinearOpMode {
             }
 
             // Telemetry
-            telemetry.addLine("=== CONTROLS ===");
+            telemetry.addLine("=== STEAMachines-CONTROLS ===");
             telemetry.addLine("Left stick: Move forward/backward/strafe");
             telemetry.addLine("Right stick: Rotate");
             telemetry.addLine("Right/Left Bumper: Intake (hold)");
