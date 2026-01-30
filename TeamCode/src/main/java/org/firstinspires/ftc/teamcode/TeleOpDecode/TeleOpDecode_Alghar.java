@@ -159,7 +159,7 @@ public class TeleOpDecode_Alghar extends LinearOpMode {
             if (gamepad1.right_trigger == 1.0 && !leftBumperPressed) {
                 launcherOn = !launcherOn;
                 leftBumperPressed = true;
-            } else if (!gamepad1.left_bumper) {
+            } else if (!gamepad1.y) {
                 leftBumperPressed = false;
             }
 
