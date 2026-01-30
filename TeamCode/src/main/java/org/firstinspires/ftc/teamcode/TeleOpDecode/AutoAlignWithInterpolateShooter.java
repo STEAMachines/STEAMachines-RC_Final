@@ -20,7 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 //@Config
 //@TeleOp
-@Disabled
+
 public class AutoAlignWithInterpolateShooter extends LinearOpMode {
 
     private VisionPortal visionPortal;
