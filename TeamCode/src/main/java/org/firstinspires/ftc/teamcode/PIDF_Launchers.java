@@ -19,6 +19,7 @@ public class PIDF_Launchers extends LinearOpMode {
     public static double f = 0;
     public static double target = 2000;
     public static double error = 0;
+    public static int toggle = 0;
 
     DcMotorEx launcherMotors;
     DcMotor intakeMotors;
@@ -30,20 +31,25 @@ public class PIDF_Launchers extends LinearOpMode {
         PIDFCoefficients pidf = launcherMotors.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         waitForStart();
         while(opModeIsActive()) {
-            intakeMotors.setPower(-1);
-            launcherMotors.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+            if (toggle == 1) {
+                intakeMotors.setPower(-1);
+                launcherMotors.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 //            telemetry.addData("P:", pidf.p);
 //            telemetry.addData("I:", pidf.i);
 //            telemetry.addData("D:", pidf.d);
 //            telemetry.addData("F:", pidf.f);
-            launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(p, i, d, f));
-            launcherMotors.setVelocity(target);
-            telemetry.addData("Target", target);
-            telemetry.addData("Shooter:", launcherMotors.getVelocity());
-            error = target - launcherMotors.getVelocity();
+                launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(p, i, d, f));
+                launcherMotors.setVelocity(target);
+                telemetry.addData("Target", target);
+                telemetry.addData("Shooter:", launcherMotors.getVelocity());
+                error = target - launcherMotors.getVelocity();
 //            telemetry.addData("Error", error);
-            telemetry.update();
-            sleep(100);
+                telemetry.update();
+                sleep(100);
+            } else if (toggle == 0) {
+                intakeMotors.setPower(0);
+                launcherMotors.setVelocity(0);
+            }
         }
     }
 }

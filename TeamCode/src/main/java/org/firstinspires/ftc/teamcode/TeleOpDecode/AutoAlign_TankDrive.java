@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -20,15 +21,17 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.concurrent.TimeUnit;
+
 @Config
 @TeleOp(name="AutoAlign_TankDrive", group="STEAMachines_DECODE")
 public class AutoAlign_TankDrive extends LinearOpMode {
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
-    double speedMultiplier = 0.7;
+    double speedMultiplier = 2500;
     public static double launcherPower = 1550; // Power default untuk launcher
-    double powerIncrement = 100; // Besaran perubahan power
+    double powerIncrement = 50; // Besaran perubahan power
 
     boolean dpadUpPressed = false;
     boolean dpadDownPressed = false;
@@ -54,10 +57,12 @@ public class AutoAlign_TankDrive extends LinearOpMode {
 //        DcMotorEx launcher = (DcMotorEx) hardwareMap.dcMotor.get("launcher");
 //        Servo pusher = hardwareMap.servo.get("pusher");
 
-        DcMotor leftDrive = hardwareMap.get(DcMotor.class, "leftDrive");
-        DcMotor rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
+        DcMotorEx leftDrive = hardwareMap.get(DcMotorEx.class, "leftDrive");
+        DcMotorEx rightDrive = hardwareMap.get(DcMotorEx.class, "rightDrive");
         DcMotor intakeMotors = hardwareMap.get(DcMotor.class, "intakeMotors");
         DcMotorEx launcherMotors = hardwareMap.get(DcMotorEx.class, "launcherMotors");
+
+//        leftDrive.
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
@@ -78,7 +83,10 @@ public class AutoAlign_TankDrive extends LinearOpMode {
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(10, 1.5, 0, 12.5);
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(100, 0.5, 0, 12.3);
         launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         waitForStart();
@@ -107,15 +115,15 @@ public class AutoAlign_TankDrive extends LinearOpMode {
 
             // TankDrive Movement
             double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x * 1.1;
+            double x = gamepad1.right_stick_x * 1.1;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
 
             double leftPower = (y + x)  / denominator * speedMultiplier;
             double rightPower = (y - x) / denominator * speedMultiplier;
 
-            leftDrive.setPower(leftPower);
-            rightDrive.setPower(rightPower);
+            leftDrive.setVelocity(leftPower);
+            rightDrive.setVelocity(rightPower);
 
             // Intake control (hold button)
             if (gamepad1.right_bumper) {
@@ -156,11 +164,51 @@ public class AutoAlign_TankDrive extends LinearOpMode {
             }
 
             // TOGGLE LAUNCHER - Left Bumper untuk ON/OFF
-            if (gamepad1.right_trigger == 1.0 && !leftBumperPressed) {
+            if (gamepad1.bWasPressed() && !leftBumperPressed) {
                 launcherOn = !launcherOn;
                 leftBumperPressed = true;
-            } else if (!(gamepad1.left_trigger == 1.0)) {
+            } else if (gamepad1.yWasPressed()) {
                 leftBumperPressed = false;
+//                double nextThreshold = speedMultiplier;
+//                while (launcherMotors.getVelocity() > 0) {
+//                    for (double i = nextThreshold; i > 0; i--) {
+//                        launcherMotors.setVelocity(i);
+//                    }
+//                    nextThreshold -= 100;
+//                    for (double i = 0; i < nextThreshold; i++) {
+//                        launcherMotors.setVelocity(i);
+//                    }
+//                }
+            }
+
+//            if (gamepad1.yWasPressed()) {
+//                double nextThreshold = speedMultiplier;
+//                while (launcherMotors.getVelocity() > 0) {
+//                    for (double i = nextThreshold; i > 0; i--) {
+//                        launcherMotors.setVelocity(i);
+//                    }
+//                    nextThreshold -= 100;
+//                    for (double i = 0; i < nextThreshold; i++) {
+//                        launcherMotors.setVelocity(i);
+//                    }
+//                }
+//            }
+
+            if (gamepad1.right_trigger == 1.0) {
+                launcherMotors.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+                ElapsedTime t = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+                double stopV = launcherPower;
+                while (launcherMotors.getVelocity() > 200) {
+                    if (t.now(TimeUnit.MILLISECONDS) / 100 <= 10) {
+                        launcherMotors.setVelocity(0);
+                    }
+                    if ((t.now(TimeUnit.MILLISECONDS) + 50) / 100 <= 10) {
+                        launcherMotors.setVelocity(stopV);
+                        stopV -= 150;
+                    }
+                }
+            } else {
+                launcherMotors.setDirection(DcMotorSimple.Direction.REVERSE);
             }
 
             // Set launcher velocity berdasarkan toggle status

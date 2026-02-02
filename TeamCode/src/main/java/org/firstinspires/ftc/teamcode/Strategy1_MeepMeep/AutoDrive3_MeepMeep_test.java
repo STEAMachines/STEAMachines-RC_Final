@@ -27,7 +27,7 @@ public class AutoDrive3_MeepMeep_test extends LinearOpMode {
         handleServo   = hardwareMap.get(Servo.class, "handleServo");
         launcherMotors.setMode(DcMotorEx.RunMode.RUN_USING_ENCODERS);
         launcherMotors.setDirection(DcMotorEx.Direction.REVERSE);
-        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10,1.5,0,12.5));
+        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(100,0.5,0,12.3));
 
         TrajectorySequence trj = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(135)

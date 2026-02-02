@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 @Config
-@Disabled
 @TeleOp(name="TeleOpSM_DECODE-1Drivers", group="STEAMachines_DECODE")
 public class TeleOpSM_DECODE_1Drive extends LinearOpMode {
     final double DESIRED_DISTANCE = 12.0;
@@ -21,8 +20,8 @@ public class TeleOpSM_DECODE_1Drive extends LinearOpMode {
     final double TURN_GAIN = 0.01;
     final double MAX_AUTO_SPEED = 1.0;
     final double MAX_AUTO_TURN = 0.5;
-    public static double p = 10;
-    public static double i = 1.5;
+    public static double p = 100;
+    public static double i = 0.5;
     public static double d = 0;
     public static double f = 12.5;
     private DcMotorEx leftDrive;
