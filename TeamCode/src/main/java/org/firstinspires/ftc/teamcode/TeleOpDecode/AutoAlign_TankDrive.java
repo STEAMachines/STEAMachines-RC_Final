@@ -194,7 +194,7 @@ public class AutoAlign_TankDrive extends LinearOpMode {
 //                }
 //            }
 
-            if (gamepad1.right_trigger == 1.0) {
+            if (gamepad1.right_trigger_pressed) {
                 launcherMotors.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
                 ElapsedTime t = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
                 double stopV = launcherPower;
@@ -209,6 +209,7 @@ public class AutoAlign_TankDrive extends LinearOpMode {
                 }
             } else {
                 launcherMotors.setDirection(DcMotorSimple.Direction.REVERSE);
+                launcherMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
 
             // Set launcher velocity berdasarkan toggle status
