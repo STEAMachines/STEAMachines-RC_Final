@@ -5,6 +5,7 @@ import android.util.Size;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -107,12 +109,12 @@ public class TeleOpDecode_Pitu extends LinearOpMode {
 
             // TankDrive Movement
             double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x * 1.1;
+            double x = gamepad1.right_stick_x;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
+//            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
 
-            double leftPower = (y + x)  / denominator * speedMultiplier;
-            double rightPower = (y - x) / denominator * speedMultiplier;
+            double leftPower = Range.clip(x - y, -1.0, 1.0);
+            double rightPower = Range.clip(x + y, -1.0, 1.0);
 
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
@@ -159,7 +161,10 @@ public class TeleOpDecode_Pitu extends LinearOpMode {
             if (gamepad1.right_trigger == 1.0 && !leftBumperPressed) {
                 launcherOn = !launcherOn;
                 leftBumperPressed = true;
-            } else if (!(gamepad1.left_trigger == 1.0)) {
+            }
+            else if (!gamepad1.y) {
+                launcherOn = !launcherOn;
+                launcherMotors.setDirection(DcMotorEx.Direction.REVERSE);
                 leftBumperPressed = false;
             }
 

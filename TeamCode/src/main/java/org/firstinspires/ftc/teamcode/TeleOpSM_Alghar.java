@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.Range;
 
 @Config
 @TeleOp(name="TeleOpSM_DECODE-Alghar", group="STEAMachines_DECODE")
-@Disabled
 public class TeleOpSM_Alghar extends LinearOpMode {
     final double DESIRED_DISTANCE = 12.0;
     final double SPEED_GAIN = 0.02;
