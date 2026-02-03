@@ -30,23 +30,26 @@ public class AutoDrive3_MeepMeep_test extends LinearOpMode {
         launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10,1.5,0,12.5));
 
         TrajectorySequence trj = drive.trajectorySequenceBuilder(new Pose2d())
-                .forward(135)
+                .forward(125)
                 .addTemporalMarker(0.1, () -> {
                     launcherMotors.setVelocity(1550);
                 })
-                .waitSeconds(3)
-                .back(20)
-                .waitSeconds(0.45)
-                .back(5)
-                .addDisplacementMarker(155, ()-> {
+                .addDisplacementMarker(120, ()-> {
                     intakeMotors.setPower(-1);
                 })
+                .waitSeconds(10)
+//                .back(20)
+//                .waitSeconds(0.45)
+//                .back(5)
+//                .addDisplacementMarker(120, ()-> {
+//                    intakeMotors.setPower(-1);
+//                })
 //                .addDisplacementMarker(155, ()-> {
 //                    if (launcherMotors.getVelocity() < target + 10 && launcherMotors.getVelocity() > target - 10) {
 //                        return;
 //                    }
 //                })
-                .waitSeconds(15)
+//                .waitSeconds(15)
 //                .splineTo(new Vector2d(75, -40), Math.toRadians(-180))
 //                .waitSeconds(3)
 //                .forward(5)
@@ -134,5 +137,20 @@ public class AutoDrive3_MeepMeep_test extends LinearOpMode {
             launcherMotors.setPower(0);
             handleServo.setPosition(0);
         }
+    }
+
+    public double calculatedPowerLaunchers(double distance) {
+        double x = distance;
+
+        //Koefisien polynomial
+        double a1 = 1.00314;
+        double a0 = 1258.83359;
+
+        double power = a0 * Math.pow(a1, x);
+
+        if (power < 0) power = 0;
+        if (power < 3000) power = 3000;
+
+        return power;
     }
 }

@@ -21,16 +21,17 @@ public class PIDF_Launchers extends LinearOpMode {
     public static double error = 0;
 
     DcMotorEx launcherMotors;
-    DcMotor intakeMotors;
+    DcMotorEx intakeMotors;
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         launcherMotors = hardwareMap.get(DcMotorEx.class, "launcherMotors");
-        intakeMotors = hardwareMap.get(DcMotor.class, "intakeMotors");
+        intakeMotors = hardwareMap.get(DcMotorEx.class, "intakeMotors");
         launcherMotors.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeMotors.setDirection(DcMotorSimple.Direction.REVERSE);
         PIDFCoefficients pidf = launcherMotors.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         waitForStart();
         while(opModeIsActive()) {
-            intakeMotors.setPower(-1);
+            intakeMotors.setVelocity(2500);
             launcherMotors.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 //            telemetry.addData("P:", pidf.p);
 //            telemetry.addData("I:", pidf.i);

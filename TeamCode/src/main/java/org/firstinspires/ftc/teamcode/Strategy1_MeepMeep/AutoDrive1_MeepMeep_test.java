@@ -1,42 +1,59 @@
 package org.firstinspires.ftc.teamcode.Strategy1_MeepMeep;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.STEAMachines_bot;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 @Autonomous(name="AutoDrive1-UsingTest",group="STEAMachines_DECODE")
 public class AutoDrive1_MeepMeep_test extends LinearOpMode {
-    DcMotor intakeMotors;
+    DcMotorEx intakeMotors;
     DcMotorEx launcherMotors;
     Servo handleServo;
+
+//    private VisionPortal visionPortal;
+//    private AprilTagProcessor aprilTag;
+//    boolean launcherOn = false;
+//    boolean autoAdjustEnabled = false;
+//    public static double launcherPower = 1850;
+//    double powerIncrement = 100;
+
+
     @Override
     public void runOpMode() {
         STEAMachines_bot drive = new STEAMachines_bot(hardwareMap);
-        intakeMotors  = hardwareMap.get(DcMotor.class, "intakeMotors");
+        intakeMotors  = hardwareMap.get(DcMotorEx.class, "intakeMotors");
         launcherMotors = hardwareMap.get(DcMotorEx.class, "launcherMotors");
         handleServo   = hardwareMap.get(Servo.class, "handleServo");
         launcherMotors.setMode(DcMotorEx.RunMode.RUN_USING_ENCODERS);
+        intakeMotors.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         launcherMotors.setDirection(DcMotorEx.Direction.REVERSE);
-        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10,3,0,12.65));
+        intakeMotors.setDirection(DcMotorEx.Direction.REVERSE);
+        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10,2.5,0,12.5));
 
+//        FtcDashboard dash = FtcDashboard.getInstance();
+//        telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
         TrajectorySequence trj = drive.trajectorySequenceBuilder(new Pose2d())
-                .forward(10)
-                .turn(Math.toRadians(25))
-                .waitSeconds(3)
-                .addDisplacementMarker(30, ()-> {
-                    launcherMotors.setVelocity(1850);
+                .back(10)
+                .turn(Math.toRadians(35))
+                .addTemporalMarker(0.1, ()-> {
+                    launcherMotors.setVelocity(2000);
                 })
                 .waitSeconds(10)
-                .addTemporalMarker(3.5, ()-> {
-                    intakeMotors.setPower(-1);
+                .addTemporalMarker(5, ()-> {
+                    intakeMotors.setVelocity(2500);
                 })
                 .build();
 //        TrajectorySequence trj = drive.trajectorySequenceBuilder(startPose)
@@ -98,10 +115,10 @@ public class AutoDrive1_MeepMeep_test extends LinearOpMode {
 //                .build();
 
         telemetry.addData("Status", "Initialized - Tunggu Start");
+        telemetry.addData("Launchers", launcherMotors.getVelocity());
         telemetry.update();
 
         waitForStart();
-
         if (opModeIsActive()) {
             drive.followTrajectorySequence(trj);
 //            drive.followTrajectory(trj_drive);
@@ -125,9 +142,24 @@ public class AutoDrive1_MeepMeep_test extends LinearOpMode {
 //            drive.followTrajectory(trj_back);
 //            drive.followTrajectorySequence(trj);
 
-            intakeMotors.setPower(0);
-            launcherMotors.setPower(0);
+            intakeMotors.setVelocity(0);
+            launcherMotors.setVelocity(0);
             handleServo.setPosition(0);
         }
+    }
+
+    public double calculatedPowerLaunchers(double distance) {
+        double x = distance;
+
+        //Koefisien polynomial
+        double a1 = 1.00314;
+        double a0 = 1258.83539;
+
+        double power = a0 * Math.pow(a1, x);
+
+        if (power < 0) power = 0;
+        if (power < 3000) power = 3000;
+
+        return power;
     }
 }

@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 @Config
-@Disabled
 @TeleOp(name="TeleOpSM_DECODE-1Drivers", group="STEAMachines_DECODE")
 public class TeleOpSM_DECODE_1Drive extends LinearOpMode {
     final double DESIRED_DISTANCE = 12.0;

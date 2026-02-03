@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -56,7 +57,7 @@ public class AutoAlign_TankDrive extends LinearOpMode {
 
         DcMotor leftDrive = hardwareMap.get(DcMotor.class, "leftDrive");
         DcMotor rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
-        DcMotor intakeMotors = hardwareMap.get(DcMotor.class, "intakeMotors");
+        DcMotorEx intakeMotors = hardwareMap.get(DcMotorEx.class, "intakeMotors");
         DcMotorEx launcherMotors = hardwareMap.get(DcMotorEx.class, "launcherMotors");
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -107,12 +108,18 @@ public class AutoAlign_TankDrive extends LinearOpMode {
 
             // TankDrive Movement
             double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x * 1.1;
+            double x = gamepad1.right_stick_x;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
+//            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
+//
+//            double leftPower = (y + x)  / denominator;
+//            double rightPower = (y - x) / denominator;
+//
+//            leftDrive.setPower(leftPower);
+//            rightDrive.setPower(rightPower);
 
-            double leftPower = (y + x)  / denominator * speedMultiplier;
-            double rightPower = (y - x) / denominator * speedMultiplier;
+            double leftPower = Range.clip(x + y, -1.0, 1.0);
+            double rightPower = Range.clip(x - y, -1.0, 1.0);
 
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
@@ -125,7 +132,7 @@ public class AutoAlign_TankDrive extends LinearOpMode {
                 intakeMotors.setPower(1);
             }
             else {
-                intakeMotors.setPower(0);
+                intakeMotors.setVelocity(0);
             }
 
             // Toggle Auto-Adjust dengan tombol X
@@ -156,10 +163,11 @@ public class AutoAlign_TankDrive extends LinearOpMode {
             }
 
             // TOGGLE LAUNCHER - Left Bumper untuk ON/OFF
-            if (gamepad1.right_trigger == 1.0 && !leftBumperPressed) {
+            if (gamepad1.b && !leftBumperPressed) {
                 launcherOn = !launcherOn;
                 leftBumperPressed = true;
-            } else if (!(gamepad1.left_trigger == 1.0)) {
+            }
+            else if (!gamepad1.y) {
                 leftBumperPressed = false;
             }
 
