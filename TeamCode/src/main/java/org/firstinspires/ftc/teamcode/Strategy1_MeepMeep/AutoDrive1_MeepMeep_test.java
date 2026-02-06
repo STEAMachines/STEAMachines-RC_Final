@@ -41,7 +41,7 @@ public class AutoDrive1_MeepMeep_test extends LinearOpMode {
         intakeMotors.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         launcherMotors.setDirection(DcMotorEx.Direction.REVERSE);
         intakeMotors.setDirection(DcMotorEx.Direction.REVERSE);
-        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10,2.5,0,12.5));
+        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(100, 0, 0, 12.5));
 
 //        FtcDashboard dash = FtcDashboard.getInstance();
 //        telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());

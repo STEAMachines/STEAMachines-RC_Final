@@ -8,20 +8,13 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
-import java.util.concurrent.TimeUnit;
 
 @Config
 @TeleOp(name="AutoAlign_TankDrive", group="STEAMachines_DECODE")
@@ -30,8 +23,8 @@ public class AutoAlign_TankDrive extends LinearOpMode {
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
     double speedMultiplier = 2500;
-    public static double launcherPower = 1550; // Power default untuk launcher
-    double powerIncrement = 50; // Besaran perubahan power
+    public static double launcherPower = 1550; // Default Power for Launchers (Access through FTC-Dash)
+    double powerIncrement = 50; // Amount of the power that changes
 
     boolean dpadUpPressed = false;
     boolean dpadDownPressed = false;
@@ -40,23 +33,16 @@ public class AutoAlign_TankDrive extends LinearOpMode {
     boolean launcherOn = false;
     boolean leftBumperPressed = false;
 
-    // Auto-adjust launcher power berdasarkan jarak
+    // Auto-adjust launcher power based on the distances.
     boolean autoAdjustEnabled = false;
     boolean xButtonPressed = false;
+
+    //Changing between mode-shooter_range
+    boolean range = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
-//        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-//        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-//        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-//        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
-//        DcMotorEx intakemotor = (DcMotorEx) hardwareMap.dcMotor.get("intakeMotor");
-//        CRServo intake = hardwareMap.crservo.get("intakeServo");
-//        CRServo intake2 = hardwareMap.crservo.get("intake2");
-//        DcMotorEx launcher = (DcMotorEx) hardwareMap.dcMotor.get("launcher");
-//        Servo pusher = hardwareMap.servo.get("pusher");
-
         DcMotorEx leftDrive = hardwareMap.get(DcMotorEx.class, "leftDrive");
         DcMotorEx rightDrive = hardwareMap.get(DcMotorEx.class, "rightDrive");
         DcMotor intakeMotors = hardwareMap.get(DcMotor.class, "intakeMotors");
@@ -76,6 +62,7 @@ public class AutoAlign_TankDrive extends LinearOpMode {
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "WebcamSM"))
                 .setCameraResolution(new Size(1280, 720))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .addProcessor(aprilTag)
                 .build();
 
@@ -86,8 +73,10 @@ public class AutoAlign_TankDrive extends LinearOpMode {
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(100, 0.5, 0, 12.3);
-        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        //PIDF SET
+        PIDFCoefficients pidfCoefficients_short = new PIDFCoefficients(100, 0.5, 0, 12.3);
+        PIDFCoefficients pidfCoefficients_long = new PIDFCoefficients(100, 0, 0, 12.5);
+        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients_short);
 
         waitForStart();
 
@@ -136,7 +125,7 @@ public class AutoAlign_TankDrive extends LinearOpMode {
                 intakeMotors.setPower(0);
             }
 
-            // Toggle Auto-Adjust dengan tombol X
+            // Toggle Auto-Adjust using X-Buttons
             if (gamepad1.x && !xButtonPressed) {
                 autoAdjustEnabled = !autoAdjustEnabled;
                 xButtonPressed = true;
@@ -144,7 +133,7 @@ public class AutoAlign_TankDrive extends LinearOpMode {
                 xButtonPressed = false;
             }
 
-            // Launcher power adjustment with D-pad (hanya jika auto-adjust OFF)
+            // Launcher power adjustment with D-pad (only if the auto-adjust OFF)
             if (!autoAdjustEnabled) {
                 if (gamepad1.dpad_up && !dpadUpPressed) {
                     launcherPower += powerIncrement;
@@ -166,50 +155,12 @@ public class AutoAlign_TankDrive extends LinearOpMode {
             // TOGGLE LAUNCHER - Left Bumper untuk ON/OFF
             if (gamepad1.bWasPressed() && !leftBumperPressed) {
                 launcherOn = !launcherOn;
-                leftBumperPressed = true;
+                leftBumperPressed = false;
             } else if (gamepad1.yWasPressed()) {
                 leftBumperPressed = false;
-//                double nextThreshold = speedMultiplier;
-//                while (launcherMotors.getVelocity() > 0) {
-//                    for (double i = nextThreshold; i > 0; i--) {
-//                        launcherMotors.setVelocity(i);
-//                    }
-//                    nextThreshold -= 100;
-//                    for (double i = 0; i < nextThreshold; i++) {
-//                        launcherMotors.setVelocity(i);
-//                    }
-//                }
-            }
-
-//            if (gamepad1.yWasPressed()) {
-//                double nextThreshold = speedMultiplier;
-//                while (launcherMotors.getVelocity() > 0) {
-//                    for (double i = nextThreshold; i > 0; i--) {
-//                        launcherMotors.setVelocity(i);
-//                    }
-//                    nextThreshold -= 100;
-//                    for (double i = 0; i < nextThreshold; i++) {
-//                        launcherMotors.setVelocity(i);
-//                    }
-//                }
-//            }
-
-            if (gamepad1.right_trigger_pressed) {
-                launcherMotors.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-                ElapsedTime t = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-                double stopV = launcherPower;
-                while (launcherMotors.getVelocity() > 200) {
-                    if (t.now(TimeUnit.MILLISECONDS) / 100 <= 10) {
-                        launcherMotors.setVelocity(0);
-                    }
-                    if ((t.now(TimeUnit.MILLISECONDS) + 50) / 100 <= 10) {
-                        launcherMotors.setVelocity(stopV);
-                        stopV -= 150;
-                    }
-                }
-            } else {
-                launcherMotors.setDirection(DcMotorSimple.Direction.REVERSE);
-                launcherMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            } else if (gamepad1.right_trigger > 0.2) {
+                leftBumperPressed = true;
+                launcherOn = false;
             }
 
             // Set launcher velocity berdasarkan toggle status
@@ -219,9 +170,16 @@ public class AutoAlign_TankDrive extends LinearOpMode {
                 } else {
                     launcherMotors.setVelocity(launcherPower);
                 }
-            } else {
+            } else if (leftBumperPressed) {
+                launcherMotors.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
                 launcherMotors.setVelocity(0);
             }
+            else {
+                launcherMotors.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+                launcherMotors.setVelocity(0);
+            }
+
+            //MODE: SHORT_RANGE & LONG_RANGE
 
             // Telemetry
             telemetry.addLine("=== CONTROLS ===");
@@ -231,10 +189,10 @@ public class AutoAlign_TankDrive extends LinearOpMode {
             telemetry.addLine("Right/Left Trigger: Toggle launcher ON/OFF");
             telemetry.addLine("X button: Toggle Auto-Adjust Power");
             telemetry.addLine("D-pad UP/DOWN: Manual power adjust");
-            telemetry.addLine("A button: Pusher");
             telemetry.addLine("");
             telemetry.addData("Launcher Status", launcherOn ? "ON" : "OFF");
             telemetry.addData("Auto-Adjust", autoAdjustEnabled ? "ENABLED" : "DISABLED");
+            telemetry.addData("MODE: ", range ? "LONG-RANGE" : "SHORT-RANGE");
 
             if (autoAdjustEnabled) {
                 telemetry.addData("Calculated Power", "%.0f", calculatedPower);

@@ -1,14 +1,10 @@
 package org.firstinspires.ftc.teamcode.Strategy1_MeepMeep;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -30,7 +26,7 @@ public class AutoDrive2_MeepMeep_test extends LinearOpMode {
         intakeMotors.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         launcherMotors.setDirection(DcMotorEx.Direction.REVERSE);
         intakeMotors.setDirection(DcMotorEx.Direction.REVERSE);
-        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10,2.5,0,12.5));
+        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(100, 0, 0, 12.5));
 
 //        FtcDashboard dash = FtcDashboard.getInstance();
 //        telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
