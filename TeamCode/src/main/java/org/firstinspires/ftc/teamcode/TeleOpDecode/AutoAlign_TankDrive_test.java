@@ -251,6 +251,6 @@
 //        if (power < 0) power = 0;
 //        if (power > 3000) power = 3000;
 //
-//        return new <Double, String>[]{power, range};
+//        return power;
 //    }
 //}
