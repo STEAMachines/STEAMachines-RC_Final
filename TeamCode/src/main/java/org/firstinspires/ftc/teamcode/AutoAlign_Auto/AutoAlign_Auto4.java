@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -82,7 +83,7 @@ public class AutoAlign_Auto4 extends LinearOpMode {
 
             TrajectorySequence trj = drive.trajectorySequenceBuilder(new Pose2d())
                     .turn(Math.toRadians(-15))
-                    .forward(115)
+                    .forward(55)
                     .addTemporalMarker(0.1, () -> {
                         launcherMotors.setVelocity(finalPower);
                     })
@@ -106,7 +107,7 @@ public class AutoAlign_Auto4 extends LinearOpMode {
                     .addTemporalMarker(7, () -> {
                         intakeMotors.setPower(-1);
                     })
-//                    .splineTo(new Vector2d(-40, 0), 250)
+                    .splineTo(new Vector2d(-40, 0), Math.toRadians(250))
 //                    .waitSeconds(0.25)
 //                    .addTemporalMarker(7.5, ()-> {
 //                        intakeMotors.setPower(0);

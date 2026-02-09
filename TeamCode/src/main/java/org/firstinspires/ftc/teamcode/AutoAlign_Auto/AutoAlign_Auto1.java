@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -26,7 +27,7 @@ public class AutoAlign_Auto1 extends LinearOpMode {
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
-    public static double launcherPower = 1900;
+    public static double launcherPower = 1850;
 
     boolean launcherOn = false;
     boolean autoAdjustEnabled = false;
@@ -106,6 +107,7 @@ public class AutoAlign_Auto1 extends LinearOpMode {
                     .addTemporalMarker(7, () -> {
                         intakeMotors.setPower(-1);
                     })
+                    .splineTo(new Vector2d(5, 0),Math.toRadians(90))
 //                    .waitSeconds(0.25)
 //                    .addTemporalMarker(7.5, ()-> {
 //                        intakeMotors.setPower(0);

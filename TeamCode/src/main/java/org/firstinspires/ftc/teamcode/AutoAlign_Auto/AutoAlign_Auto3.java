@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -61,7 +62,7 @@ public class AutoAlign_Auto3 extends LinearOpMode {
                 .addProcessor(aprilTag)
                 .build();
 
-        PIDFCoefficients pidfCoefficients_short = new PIDFCoefficients(100, 0.5, 0, 12.3);
+        PIDFCoefficients pidfCoefficients_short = new PIDFCoefficients(420, 0, 0, 13.4);
         launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients_short);
 
         waitForStart();
@@ -86,26 +87,28 @@ public class AutoAlign_Auto3 extends LinearOpMode {
                 .addTemporalMarker(0.1, () -> {
                     launcherMotors.setVelocity(finalPower);
                 })
+                .turn(Math.toRadians(-20))
                 .waitSeconds(3)
                 .addTemporalMarker(5, () -> {
                     intakeMotors.setPower(-1);
                 })
-                .waitSeconds(0.25)
-                .addTemporalMarker(5.5, () -> {
-                    intakeMotors.setPower(0);
-                })
-                .waitSeconds(0.25)
+                .waitSeconds(0.5)
                 .addTemporalMarker(6, () -> {
-                    intakeMotors.setPower(-1);
-                })
-                .waitSeconds(0.25)
-                .addTemporalMarker(6.5, () -> {
                     intakeMotors.setPower(0);
                 })
-                .waitSeconds(0.25)
+                .waitSeconds(0.5)
                 .addTemporalMarker(7, () -> {
                     intakeMotors.setPower(-1);
                 })
+                .waitSeconds(0.5)
+                .addTemporalMarker(8, () -> {
+                    intakeMotors.setPower(0);
+                })
+                .waitSeconds(0.5)
+                .addTemporalMarker(9, () -> {
+                    intakeMotors.setPower(-1);
+                })
+                .splineTo(new Vector2d(-40, 0), Math.toRadians(-250))
 //                .splineTo(new Vector2d(-40, 0), -265)
 //                .waitSeconds(0.25)
 //                .addTemporalMarker(7.5, ()-> {

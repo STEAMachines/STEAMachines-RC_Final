@@ -18,8 +18,12 @@ public class PIDF_Launchers extends LinearOpMode {
     public static double d = 0;
     public static double f = 0;
     public static double target = 2000;
+    public static double low = 1000;
     public static double error = 0;
     public static int toggle = 0;
+    public static boolean hilo = true;
+    public static boolean intake = false;
+    public static boolean shooter = false;
 
     DcMotorEx launcherMotors;
     DcMotor intakeMotors;
@@ -31,25 +35,33 @@ public class PIDF_Launchers extends LinearOpMode {
         PIDFCoefficients pidf = launcherMotors.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         waitForStart();
         while(opModeIsActive()) {
-            if (toggle == 1) {
-                intakeMotors.setPower(-1);
+                if (intake) {
+                    intakeMotors.setPower(-1);
+                }
+                else {
+                    intakeMotors.setPower(0);
+                }
                 launcherMotors.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 //            telemetry.addData("P:", pidf.p);
 //            telemetry.addData("I:", pidf.i);
 //            telemetry.addData("D:", pidf.d);
 //            telemetry.addData("F:", pidf.f);
-                launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(p, i, d, f));
-                launcherMotors.setVelocity(target);
+                if (shooter) {
+                    launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(p, i, d, f));
+                    if (hilo) {
+                        launcherMotors.setVelocity(target);}
+                    else {
+                        launcherMotors.setVelocity(low);
+                    }
+                } else {
+                    launcherMotors.setVelocity(0);
+                }
                 telemetry.addData("Target", target);
                 telemetry.addData("Shooter:", launcherMotors.getVelocity());
                 error = target - launcherMotors.getVelocity();
-//            telemetry.addData("Error", error);
+            telemetry.addData("Error", error);
                 telemetry.update();
                 sleep(100);
-            } else if (toggle == 0) {
-                intakeMotors.setPower(0);
-                launcherMotors.setVelocity(0);
             }
         }
     }
-}

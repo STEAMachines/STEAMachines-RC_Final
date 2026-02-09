@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.AutoAlign_Auto;
+package org.firstinspires.ftc.teamcode.Strategy2;
 
 import android.util.Size;
 
@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,11 +22,11 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 @Config
 @Autonomous
-public class AutoAlign_Auto2 extends LinearOpMode {
+public class Auto1_Shoot_SpikeMark extends LinearOpMode {
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
-    public static double launcherPower = 1850;
+    public static double launcherPower = 1550;
 
     boolean launcherOn = false;
     boolean autoAdjustEnabled = false;
@@ -62,57 +61,65 @@ public class AutoAlign_Auto2 extends LinearOpMode {
                 .addProcessor(aprilTag)
                 .build();
 
-        PIDFCoefficients pidfCoefficients_long = new PIDFCoefficients(25, 1.25, 0, 12.25);
-        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients_long);
+        PIDFCoefficients pidfCoefficients_short = new PIDFCoefficients(420, 0, 0, 13.4);
+        launcherMotors.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients_short);
 
         waitForStart();
-            double distanceToTag = 0;
-            double calculatedPower = launcherPower;
+        double distanceToTag = 0;
+        double calculatedPower = launcherPower;
 
-            if (!aprilTag.getDetections().isEmpty()) {
-                AprilTagDetection tag = aprilTag.getDetections().get(0);
-                distanceToTag = tag.ftcPose.range;
+        if (!aprilTag.getDetections().isEmpty()) {
+            AprilTagDetection tag = aprilTag.getDetections().get(0);
+            distanceToTag = tag.ftcPose.range;
 
-                telemetry.addData("Tag ID", tag.id);
-                telemetry.addData("Distance (inch)", "%.2f", distanceToTag);
-            } else {
-                telemetry.addLine("No AprilTag detected");
-            }
+            telemetry.addData("Tag ID", tag.id);
+            telemetry.addData("Distance (inch)", "%.2f", distanceToTag);
+        } else {
+            telemetry.addLine("No AprilTag detected");
+        }
 
-            double finalPower = autoAdjustEnabled ? calculateLauncherPower(distanceToTag) : launcherPower;
+        double finalPower = autoAdjustEnabled ? calculateLauncherPower(distanceToTag) : launcherPower;
 
-            TrajectorySequence trj = drive.trajectorySequenceBuilder(new Pose2d())
-                    .back(10)
-                    .turn(Math.toRadians(-40))
-                    .addTemporalMarker(0.1, () -> {
-                        launcherMotors.setVelocity(finalPower); // NYALAKAN
-                    })
-                    .waitSeconds(10)
-                    .addTemporalMarker(5, () -> {
-                        intakeMotors.setPower(-1);
-                    })
-                    .waitSeconds(0.25)
-                    .addTemporalMarker(5.5, () -> {
-                        intakeMotors.setPower(0);
-                    })
-                    .waitSeconds(0.25)
-                    .addTemporalMarker(6, () -> {
-                        intakeMotors.setPower(-1);
-                    })
-                    .waitSeconds(0.25)
-                    .addTemporalMarker(6.5, () -> {
-                        intakeMotors.setPower(0);
-                    })
-                    .waitSeconds(0.25)
-                    .addTemporalMarker(7, () -> {
-                        intakeMotors.setPower(-1);
-                    })
-                    .splineTo(new Vector2d(-5, 0),Math.toRadians(-90))
-//                    .waitSeconds(0.25)
-//                    .addTemporalMarker(7.5, ()-> {
-//                        intakeMotors.setPower(0);
-//                    })
-                    .build();
+        TrajectorySequence trj = drive.trajectorySequenceBuilder(new Pose2d())
+                .turn(Math.toRadians(15))
+                .forward(115)
+                .addTemporalMarker(0.1, () -> {
+                    launcherMotors.setVelocity(finalPower);
+                })
+                .turn(Math.toRadians(-20))
+                .waitSeconds(3)
+                .addTemporalMarker(5, () -> {
+                    intakeMotors.setPower(-1);
+                })
+                .waitSeconds(0.25)
+                .addTemporalMarker(5.5, () -> {
+                    intakeMotors.setPower(0);
+                })
+                .waitSeconds(1)
+                .addTemporalMarker(6.75, () -> {
+                    intakeMotors.setPower(-1);
+                })
+                .forward(10)
+                .turn(Math.toRadians(-90))
+                .forward(5)
+//                .waitSeconds(0.5)
+//                .addTemporalMarker(7, () -> {
+//                    intakeMotors.setPower(-1);
+//                })
+//                .waitSeconds(0.5)
+//                .addTemporalMarker(8, () -> {
+//                    intakeMotors.setPower(0);
+//                })
+//                .waitSeconds(0.5)
+//                .addTemporalMarker(9, () -> {
+//                    intakeMotors.setPower(-1);
+//                })
+//                .splineTo(new Vector2d(-40, 0), -265)
+//                .waitSeconds(0.25)
+//                .addTemporalMarker(7.5, ()-> {
+//                    intakeMotors.setPower(0);
+//                })
+                .build();
         if(opModeIsActive()) {
             drive.followTrajectorySequence(trj);
 
