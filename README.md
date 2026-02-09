@@ -1,7 +1,9 @@
 # STEAMachines-RC
 
 Welcome to **STEAMachines-RC** Pages, this is the official code from robotics team called
-***STEAMachines #15242*** from Yogyakarta, Indonesia that compete in FTC IFR Nusantara Regional.
+***STEAMachines #15242*** from Yogyakarta, Indonesia that compete in FTC IFR Nusantara Regional. 
+
+**Thanks for all the support!**
 
 ---
 
