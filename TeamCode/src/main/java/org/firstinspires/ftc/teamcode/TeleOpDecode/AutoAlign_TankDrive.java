@@ -212,8 +212,10 @@ public class AutoAlign_TankDrive extends LinearOpMode {
      * @param distance Jarak ke AprilTag dalam inch
      * @return Power yang diperlukan untuk launcher
      */
+    double x = 0; // starting old distance
+    double alpha = 0.2; // smoothing factor 1 = 100%
     private double calculateLauncherPower(double distance) {
-        double x = distance;
+        x = x + alpha * (distance - x);
 
         // Koefisien polynomial
 //        double a4 = -0.0000459204;
