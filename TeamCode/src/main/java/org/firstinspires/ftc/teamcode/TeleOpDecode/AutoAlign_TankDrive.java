@@ -92,7 +92,7 @@ public class AutoAlign_TankDrive extends LinearOpMode {
                 distanceToTag = tag.ftcPose.range;
 
                 // Jika auto-adjust enabled, hitung power berdasarkan jarak
-                if (autoAdjustEnabled) {
+                if (autoAdjustEnabled && calculateLauncherPower(distanceToTag) > 0) {
                     calculatedPower = calculateLauncherPower(distanceToTag);
                 }
 
@@ -188,7 +188,8 @@ public class AutoAlign_TankDrive extends LinearOpMode {
             telemetry.addLine("Right/Left Bumper: Intake (hold)");
             telemetry.addLine("Right/Left Trigger: Toggle launcher ON/OFF");
             telemetry.addLine("X button: Toggle Auto-Adjust Power");
-            telemetry.addLine("D-pad UP/DOWN: Manual power adjust");
+            telemetry.addLine("D-pad UP/DOWN: Manual p" +
+                    "ower adjust");
             telemetry.addLine("");
             telemetry.addData("Launcher Status", launcherOn ? "ON" : "OFF");
             telemetry.addData("Auto-Adjust", autoAdjustEnabled ? "ENABLED" : "DISABLED");
